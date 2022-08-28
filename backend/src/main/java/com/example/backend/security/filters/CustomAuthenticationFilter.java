@@ -40,6 +40,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     //if login succesfull successfulAuthentication() gets called by spring magic
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        //if null -> https://stackoverflow.com/questions/39028179/spring-security-loadbyusernames-username-field-is-empty -> dont send request via json
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         log.info("Username is: {}", username);
@@ -78,6 +79,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
+        tokens.put("user_name", user.getUsername());
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
     }
