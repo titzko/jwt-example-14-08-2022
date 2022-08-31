@@ -2,22 +2,25 @@
   <div class="container login-view-component">
     <h1>Login</h1>
     <div class="mb-3">
-  <form>
-  <div class=" mt-3">
-    <label  for="usernameInput" class="form-label">Username</label>
-    <input v-model="username" type="text" class="form-control" id="usernameInput" placeholder="Enter username..." required>
-  </div>
-  <div class=" mt-3">
-    <label for="passwordInput" class="form-label">Username</label>
-    <input v-model="password" type="password" class="form-control" id="passwordInput" placeholder="Enter password..." required>
-  </div>
-  <div class=" mt-3 d-flex justify-content-center">
-    <button class="btn btn-primary" @click="login">Login</button>
-    <button class="btn btn-custom">Create Account</button>
-  </div>
-  </form>
-{{ storeUsername }} <br>
-      {{ this.$store.getters.getJwtToken }} <br>
+      <form>
+        <div class=" mt-3">
+          <label for="usernameInput" class="form-label">Username</label> <input v-model="username" type="text"
+                                                                                class="form-control" id="usernameInput"
+                                                                                placeholder="Enter username..."
+                                                                                required>
+        </div>
+        <div class=" mt-3">
+          <label for="passwordInput" class="form-label">Username</label> <input v-model="password" type="password"
+                                                                                class="form-control" id="passwordInput"
+                                                                                placeholder="Enter password..."
+                                                                                required>
+        </div>
+        <div class=" mt-3 d-flex justify-content-center">
+          <button class="btn btn-primary" @click="login">Login</button>
+          <button class="btn btn-custom">Create Account</button>
+        </div>
+      </form>
+      {{ storeUsername }} <br> {{ this.$store.getters.getJwtToken }} <br>
 
     </div>
   </div>
@@ -50,27 +53,23 @@ export default {
     },
   },
   methods: {
-    login(): void {
-      const credentials: UserCredentials = {
-        username: this.username,
-        password: this.password
-      };
-      sendUserLogin(credentials)
-      .then((response) => {
-        if(response.valid) {
-          this.handleSuccessfullLogin(response as JwtResponse);
-        }else {
-          this.handleFailedLogin();
-        }
-      });
+    async login() {
+      try {
+        const credentials: UserCredentials = {
+          username: this.username,
+          password: this.password
+        };
+        let x: JwtResponse = await sendUserLogin(credentials);
+        this.handleSuccessfullLogin(x as JwtResponse);
+      } catch (err) {
+        this.handleFailedLogin();
+      }
     },
     handleSuccessfullLogin(jwtResponse: JwtResponse): void {
       console.log("Successfull Login")
       console.log(jwtResponse);
       this.storeUsername = jwtResponse.user_name;
       this.$store.commit(UserMutations.SET_JWT, jwtResponse.access_token);
-
-
 
       //TODO write in store
       //write util function -> append jwt in header
